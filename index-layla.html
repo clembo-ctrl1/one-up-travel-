@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One-Up Travel | AI Travel Planning</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+      overflow-x: hidden;
+      background: #0a0a0f;
+    }
+
+    /* ANIMATED GRADIENT BACKGROUND */
+    .gradient-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, 
+        #667eea 0%, 
+        #764ba2 25%, 
+        #f093fb 50%, 
+        #4facfe 75%, 
+        #667eea 100%
+      );
+      background-size: 400% 400%;
+      animation: gradientFlow 15s ease infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* GRADIENT OVERLAY */
+    .gradient-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(240, 147, 251, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.2) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* GLASS MORPHISM BLOBS */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.5;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      top: -10%;
+      left: -10%;
+      animation-delay: 0s;
+    }
+
+    .blob-2 {
+      width: 350px;
+      height: 350px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      bottom: -10%;
+      right: -5%;
+      animation-delay: 3s;
+    }
+
+    .blob-3 {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      top: 50%;
+      right: 10%;
+      animation-delay: 6s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    /* CONTENT WRAPPER */
+    .content {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      padding: 25px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .logo img {
+      height: 45px;
+      width: auto;
+      transition: all 0.3s ease;
+    }
+
+    .logo img:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    nav {
+      display: flex;
+      gap: 35px;
+      align-items: center;
+    }
+
+    nav a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    nav a:hover {
+      color: white;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: white;
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .menu-btn {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 50px 30px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 50px;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 30px;
+      animation: fadeInUp 0.8s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 25px;
+      letter-spacing: -2px;
+      animation: fadeInUp 0.8s ease 0.2s backwards;
+    }
+
+    /* Wave animation through entire text */
+    .animated-headline {
+      display: inline-block;
+      background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        #ffffff 20%,
+        #f093fb 40%,
+        #4facfe 50%,
+        #f093fb 60%,
+        #ffffff 80%,
+        #ffffff 100%
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: waveFlow 3s linear infinite;
+    }
+
+    @keyframes waveFlow {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #f093fb 50%, #ffffff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s infinite;
+      background-size: 200% 200%;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 650px;
+      margin-bottom: 45px;
+      line-height: 1.6;
+      animation: fadeInUp 0.8s ease 0.4s backwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* SEARCH BOX */
+    .search-container {
+      width: 100%;
+      max-width: 700px;
+      margin-bottom: 30px;
+      animation: fadeInUp 0.8s ease 0.6s backwards;
+    }
+
+    .search-box {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(30px);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 20px 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-box:focus-within {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-icon {
+      color: rgba(255, 255, 255, 0.6);
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 17px;
+      font-weight: 400;
+    }
+
+    .search-box input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 35px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    /* FEATURES */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s ease 0.8s backwards;
+    }
+
+    .feature {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 15px 25px;
+      border-radius: 15px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .feature:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-3px);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100vh;
+      background: rgba(15, 15, 25, 0.95);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 100px 25px 30px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .sidebar.open {
+      left: 0;
+      box-shadow: 5px 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-item {
+      display: block;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .sidebar-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+
+    /* LOADING STATE */
+    .loading {
+      display: none;
+      color: white;
+      font-size: 15px;
+      margin-top: 20px;
+      opacity: 0.8;
+    }
+
+    .loading.show {
+      display: block;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.4; }
+    }
+
+    /* MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+      header {
+        padding: 20px 25px;
+      }
+
+      h1 {
+        font-size: 48px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+
+      .search-box {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .search-btn {
+        width: 100%;
+      }
+
+      nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ANIMATED BACKGROUND -->
+  <div class="gradient-bg"></div>
+  <div class="gradient-overlay"></div>
+
+  <!-- FLOATING BLOBS -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <a href="itinerary-layla.html" class="sidebar-item">My Itinerary</a>
+    <div class="sidebar-item" onclick="alert('Budget tracking coming soon')">Budget Tracker</div>
+    <div class="sidebar-item" onclick="newTrip()">Plan New Trip</div>
+    <div class="sidebar-item" onclick="alert('Saved trips coming soon')">Saved Trips</div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    
+    <!-- HEADER -->
+    <header>
+      <a href="index-layla.html" class="logo">
+        <img src="logo.png" alt="One-Up Travel">
+      </a>
+      
+      <nav>
+        <a href="about-layla.html">About</a>
+        <a href="contact-layla.html">Contact</a>
+        <a href="#features">Features</a>
+      </nav>
+
+      <button class="menu-btn" onclick="toggleSidebar()">Menu ☰</button>
+    </header>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="badge">
+        <span>Powered by Artificial Intelligence</span>
+      </div>
+
+      <h1>
+        <span class="animated-headline">Plan Your Perfect Dream Trip</span>
+      </h1>
+
+      <p class="subtitle">
+        Experience intelligent travel planning. Get comprehensive itineraries with flights, 
+        accommodations, activities, and insurance—delivered in seconds.
+      </p>
+
+      <div class="search-container">
+        <div class="search-box">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input 
+            type="text" 
+            id="tripInput"
+            placeholder="Enter your destination and duration"
+            onkeypress="handleEnter(event)"
+          >
+          <button class="search-btn" id="submitBtn" onclick="planTrip()">
+            Plan Trip
+          </button>
+        </div>
+      </div>
+
+      <div class="loading" id="loading">
+        Creating your personalized itinerary...
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <span>Instant Results</span>
+        </div>
+        <div class="feature">
+          <span>Personalized Planning</span>
+        </div>
+        <div class="feature">
+          <span>Best Pricing</span>
+        </div>
+        <div class="feature">
+          <span>Intelligent Algorithms</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function handleEnter(event) {
+      if (event.key === 'Enter') {
+        planTrip();
+      }
+    }
+
+    function newTrip() {
+      document.getElementById('tripInput').value = '';
+      document.getElementById('loading').classList.remove('show');
+      toggleSidebar();
+    }
+
+    function planTrip() {
+      const input = document.getElementById('tripInput').value.trim();
+      const loading = document.getElementById('loading');
+      const submitBtn = document.getElementById('submitBtn');
+      
+      if (!input) {
+        alert('Please enter a destination');
+        return;
+      }
+
+      loading.classList.add('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Planning...';
+
+      localStorage.setItem('currentTrip', input);
+
+      setTimeout(() => {
+        window.location.href = 'itinerary-layla.html';
+      }, 1800);
+    }
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('sidebar');
+      const menuBtn = document.querySelector('.menu-btn');
+      
+      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    });
+  </script>
+
+</body>
+</html>
